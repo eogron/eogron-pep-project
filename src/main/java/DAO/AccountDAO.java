@@ -31,7 +31,6 @@ public class AccountDAO {
             String sql = "SELECT * FROM account WHERE username = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
-            preparedStatement.executeQuery();
 
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
