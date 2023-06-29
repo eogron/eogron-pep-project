@@ -19,7 +19,7 @@ public class AccountDAO {
                 int account_id = (int) pkeyResultSet.getLong(1);
                 return new Account(account_id, account.username, account.password);
             }
-        } catch(SQLException e){
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
         return null;
@@ -31,7 +31,7 @@ public class AccountDAO {
             String sql = "SELECT * FROM account WHERE username = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
-            preparedStatement.executeUpdate();
+            preparedStatement.executeQuery();
 
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){

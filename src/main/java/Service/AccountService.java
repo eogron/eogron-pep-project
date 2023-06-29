@@ -18,7 +18,21 @@ public class AccountService {
                 || account.password.length() < 4
                 || accountDAO.getAccountByUsername(account.username) != null) {
             return null;
+        } else {
+            return accountDAO.addAccount(account);
         }
-        return accountDAO.addAccount(account);
+    }
+
+    public Account login(Account acc) {
+        Account login_acc = accountDAO.getAccountByUsername(acc.username);
+        if (login_acc == null) {
+            return null;
+        }
+
+        if (login_acc.password.equals(acc.password)) {
+            return login_acc;
+        } else {
+            return null;
+        }
     }
 }
