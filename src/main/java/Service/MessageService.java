@@ -1,30 +1,18 @@
 package Service;
 
-import Model.*;
-import DAO.*;
+import Model.Message;
+import DAO.MessageDAO;
+import java.util.LinkedList;
 
 public class MessageService {
     private MessageDAO messageDAO;
-    // private AccountDAO accountDAO;
 
     public MessageService() {
         messageDAO = new MessageDAO();
-        // accountDAO = new AccountDAO();
     }
-    /*
-    public MessageService(MessageDAO messageDAO){
+    public MessageService(MessageDAO messageDAO) {
         this.messageDAO = messageDAO;
-        accountDAO = new AccountDAO();
     }
-    public MessageService(AccountDAO accountDAO) {
-        this.accountDAO = accountDAO;
-        messageDAO = new MessageDAO();
-    }
-    public MessageService(MessageDAO messageDAO, AccountDAO accountDAO) {
-        this.messageDAO = messageDAO;
-        this.accountDAO = accountDAO;
-    }
-    */
     
 
     public Message createMessage(Message msg) {
@@ -33,5 +21,9 @@ public class MessageService {
         } else {
             return messageDAO.addMessage(msg);
         }
+    }
+
+    public LinkedList<Message> getAllMessages() {
+        return messageDAO.getAllMessages();
     }
 }
