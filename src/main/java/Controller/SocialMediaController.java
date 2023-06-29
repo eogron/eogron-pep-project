@@ -15,9 +15,11 @@ import Service.*;
  */
 public class SocialMediaController {
     AccountService accountService;
+    MessageService messageService;
 
     public SocialMediaController() {
         this.accountService = new AccountService();
+        this.messageService = new MessageService();
     }
 
     /**
@@ -28,6 +30,8 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::postAccountHandler);
+        app.post("/login", this::postLoginHandler);
+        app.post("/messages", this::postMessageHandler);
 
         return app;
     }
@@ -40,14 +44,36 @@ public class SocialMediaController {
         context.json("sample text");
     }
 
-    private void postAccountHandler (Context ctx) throws JsonProcessingException {
+    private void postMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message msg = mapper.readValue(ctx.body(), Message.class);
+        Message createdMessage = messageService.createMessage(msg);
+        if (createdMessage != null) {
+            ctx.json(mapper.writeValueAsString(createdMessage));
+        } else {
+            ctx.status(400);
+        }
+    }
+
+    private void postAccountHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
         Account createdAccount = accountService.createAccount(account);
-        if(createdAccount!=null){
+        if (createdAccount != null) {
             ctx.json(mapper.writeValueAsString(createdAccount));
         } else {
             ctx.status(400);
+        }
+    }
+
+    private void postLoginHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper m = new ObjectMapper();
+        Account acc = m.readValue(ctx.body(), Account.class);
+        Account loginAccount = accountService.login(acc);
+        if (loginAccount != null) {
+            ctx.json(m.writeValueAsString(loginAccount));
+        } else {
+            ctx.status(401);
         }
     }
 }
