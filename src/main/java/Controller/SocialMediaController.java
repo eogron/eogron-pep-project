@@ -34,6 +34,10 @@ public class SocialMediaController {
         app.post("/login", this::postLoginHandler);
         app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
+        app.get("/accounts/{account_id}/messages", this::getMessagesFromAccountHandler);
+        app.get("/messages/{message_id}", this::getMessageHandler);
+        app.patch("messages/{message_id}", this::updateMessageHandler);
+        app.delete("/messages/{message_id}", this::deleteMessageHandler);
 
         return app;
     }
@@ -44,17 +48,6 @@ public class SocialMediaController {
      */
     private void exampleHandler(Context context) {
         context.json("sample text");
-    }
-
-    private void postMessageHandler(Context ctx) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Message msg = mapper.readValue(ctx.body(), Message.class);
-        Message createdMessage = messageService.createMessage(msg);
-        if (createdMessage != null) {
-            ctx.json(mapper.writeValueAsString(createdMessage));
-        } else {
-            ctx.status(400);
-        }
     }
 
     private void postAccountHandler(Context ctx) throws JsonProcessingException {
@@ -79,9 +72,61 @@ public class SocialMediaController {
         }
     }
 
+    private void postMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message msg = mapper.readValue(ctx.body(), Message.class);
+        Message createdMessage = messageService.createMessage(msg);
+        if (createdMessage != null) {
+            ctx.json(mapper.writeValueAsString(createdMessage));
+        } else {
+            ctx.status(400);
+        }
+    }
+
     private void getAllMessagesHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper m = new ObjectMapper();
         LinkedList<Message> messages = messageService.getAllMessages();
         ctx.json(m.writeValueAsString(messages));
+    }
+
+    private void getMessagesFromAccountHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper m = new ObjectMapper();
+        int account_id = Integer.parseInt(ctx.pathParam("account_id"));
+        LinkedList<Message> messages = messageService.getAllMessages(account_id);
+        ctx.json(m.writeValueAsString(messages));
+    }
+
+    private void getMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper m = new ObjectMapper();
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message msg = messageService.getMessage(message_id);
+        if (msg != null) {
+            ctx.json(m.writeValueAsString(msg));
+        } else {
+            ctx.status(200);
+        }
+    }
+
+    private void updateMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper m = new ObjectMapper();
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        String message_text = m.readValue(ctx.body(), Message.class).message_text;
+        Message msg = messageService.updateMessage(message_id, message_text);
+        if (msg != null) {
+            ctx.json(m.writeValueAsString(msg));
+        } else {
+            ctx.status(400);
+        }
+    }
+
+    private void deleteMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper m = new ObjectMapper();
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message msg = messageService.deleteMessage(message_id);
+        if (msg != null) {
+            ctx.json(m.writeValueAsString(msg));
+        } else {
+            ctx.status(200);
+        }
     }
 }
